@@ -12,5 +12,6 @@ package modell;
 public class Clement {
   public static void main(String[] args) {
     System.out.println("Ez az enyém ...");
+    System.out.println("Biztosan a tied? ;)");
   }
 }
