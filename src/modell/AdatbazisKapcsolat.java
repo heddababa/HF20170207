@@ -1,6 +1,5 @@
 package modell;
 
-
 public interface AdatbazisKapcsolat {
   
   String URL = "jdbc:oracle:thin:@localhost:1521:xe";
