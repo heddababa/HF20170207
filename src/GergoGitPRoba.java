@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package modell;
 
 /**
  *
- * @author Karoly
+ * @author User
  */
-public class Clement {
+public class GergoGitPRoba {
   public static void main(String[] args) {
-    System.out.println("Ez az enyém ...");
-    System.out.println("Biztosan a tied? ;)");
+    System.out.println("Van itt valami");
   }
 }

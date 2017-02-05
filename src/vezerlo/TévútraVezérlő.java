@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package modell;
+package vezerlo;
 
 /**
  *
- * @author Karoly
+ * @author Nigel-727
  */
-public class Clement {
+public class TévútraVezérlő {
   public static void main(String[] args) {
-    System.out.println("Ez az enyém ...");
-    System.out.println("Biztosan a tied? ;)");
+    System.out.println("én lenni teszt elek"); 
   }
 }
