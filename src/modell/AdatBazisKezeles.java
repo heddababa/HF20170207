@@ -41,11 +41,30 @@ public class AdatBazisKezeles implements AdatbazisKapcsolat {
       kapcsolatNyit();
       Statement s = kapcsolat.createStatement();
       ResultSet rs = s.executeQuery(
-        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV "+
+        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV\n"+
         "FROM EMPLOYEES E\n" +
         "ORDER BY NÉV");
       while(rs.next())
         lista.add(rs.getString("NÉV"));
+      kapcsolatZar();
+    }
+    catch(SQLException e) {
+      System.out.println(e.getMessage());
+    }
+    return lista;    
+  }
+  
+  public ArrayList<String> lekerdezMunkakorok() { //Összes munkakör
+    ArrayList<String> lista=new ArrayList<>();
+    try {
+      kapcsolatNyit();
+      Statement s = kapcsolat.createStatement();
+      ResultSet rs = s.executeQuery(
+        "SELECT JOB_TITLE AS MUNKAKOR\n"+
+        "FROM JOBS J\n" +
+        "ORDER BY MUNKAKOR");
+      while(rs.next())
+        lista.add(rs.getString("MUNKAKOR"));
       kapcsolatZar();
     }
     catch(SQLException e) {
@@ -206,9 +225,6 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
     return ok;
   }
 
-
-  
-  
   public ArrayList<Dolgozo> lekerdezDolgozokListajaAdottReszleghez(int reszlegId) { //Adott reszleg dolgozoi
     ArrayList<Dolgozo> lista=new ArrayList<>();
     try {

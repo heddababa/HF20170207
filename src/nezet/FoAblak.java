@@ -4,20 +4,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.PopupMenu;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLabel;
@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -43,6 +44,9 @@ public class FoAblak extends JFrame
   private JList lDolgozoLista = new JList(new DefaultListModel());
   private JTextField tfDolgozoKeres = new JTextField("Keresendő dolgozó", 12);
   private JScrollPane spDolgozoLista = new JScrollPane(lDolgozoLista);
+  private JButton btUjDolgozo = new JButton("Új dolgozó felvétele");
+  private JLabel lbReszleg = new JLabel("Részleg:   ", SwingConstants.RIGHT);
+  private JLabel lbKereses = new JLabel("Dolgozó keresése:   ", SwingConstants.RIGHT);
   private AdatBazisKezeles modell;
   DefaultListModel dlm = new DefaultListModel();
 
@@ -56,34 +60,39 @@ public class FoAblak extends JFrame
     
     cbReszlegLista = reszlegListaBetoltes();  
     
-    JPanel pnReszlegek=new JPanel(new GridLayout(2, 1));
-    pnReszlegek.add(new JLabel("Részlegek: "));
+    JPanel pnReszlegek=new JPanel(new GridLayout(1, 7));
+    pnReszlegek.add(lbReszleg);
     pnReszlegek.add(cbReszlegLista);
-    
-    JPanel pnDolgozoKereses=new JPanel(new GridLayout(2, 1));
-    pnDolgozoKereses.add(new JLabel("Dolgozó keresés: "));
+    pnReszlegek.add(lbKereses);
     tfDolgozoKeres.setText("");
     tfDolgozoKeres.getDocument().addDocumentListener(new MyDocumentListener());
     tfDolgozoKeres.getDocument().putProperty("name", "Text Area");    
-    pnDolgozoKereses.add(tfDolgozoKeres);    
-    
+    pnReszlegek.add(tfDolgozoKeres);
     lbTalalat.setVisible(false);
     lbTalalat.setForeground(Color.blue);
     lbTalalat.setHorizontalAlignment(SwingConstants.CENTER);
+    pnReszlegek.add(lbTalalat);
     
-    JPanel pn = new JPanel(new GridLayout(1, 3));
+    JPanel pn = new JPanel(new GridLayout(1, 2));
     pn.add(panelKeszit(pnReszlegek));
-    pn.add(panelKeszit(pnDolgozoKereses));
-    pn.add(lbTalalat);
-    add(pn, BorderLayout.PAGE_START);    
-    add(new JPanel(), BorderLayout.LINE_START);
-    add(new JPanel(), BorderLayout.LINE_END);
-    add(new JPanel(), BorderLayout.PAGE_END);
+    add(pn, BorderLayout.NORTH);    
+//    add(new JPanel(), BorderLayout.LINE_START);
+//    add(new JPanel(), BorderLayout.LINE_END);
+//    add(new JPanel(), BorderLayout.PAGE_END);
     
     add(spDolgozoLista);
+    
+    JPanel pnDolgozoGomb = new JPanel(new GridLayout(1,1));
+    pnDolgozoGomb.add(btUjDolgozo, BorderLayout.CENTER);
+    pnDolgozoGomb.setBorder(new EmptyBorder(10, 250, 10, 250));
+    
+    add(pnDolgozoGomb, BorderLayout.AFTER_LAST_LINE);
+    
     setVisible(true);
+    
     cbReszlegLista.addActionListener(this);
     //lDolgozoLista.addListSelectionListener(this);
+    btUjDolgozo.addActionListener(this);
     
     lDolgozoLista.addMouseListener(new MouseAdapter() {
       @Override
@@ -126,18 +135,18 @@ public class FoAblak extends JFrame
   
   private JPanel panelKeszit(JPanel pnReszlegek) {
     JPanel ujPn=new JPanel();
-    ujPn.add(new JPanel(), BorderLayout.PAGE_START);
-    ujPn.add(new JPanel(), BorderLayout.PAGE_END);
-    ujPn.add(new JPanel(), BorderLayout.LINE_START);
-    ujPn.add(new JPanel(), BorderLayout.LINE_START);
-    ujPn.add(pnReszlegek, BorderLayout.CENTER);
+//    ujPn.add(new JPanel(), BorderLayout.PAGE_START);
+//    ujPn.add(new JPanel(), BorderLayout.PAGE_END);
+//    ujPn.add(new JPanel(), BorderLayout.LINE_START);
+//    ujPn.add(new JPanel(), BorderLayout.LINE_START);
+    ujPn.add(pnReszlegek);
     return ujPn;
   }
 
   private JComboBox reszlegListaBetoltes() {
     JComboBox cbReszlegLista = new JComboBox();
     ArrayList<Reszleg> reszlegek=modell.lekerdezReszleg();
-    cbReszlegLista.addItem(new Reszleg("Összes dolgozó", -1));
+    cbReszlegLista.addItem(new Reszleg(" -- Összes dolgozó", -1));
     for (Reszleg reszleg : reszlegek)
       cbReszlegLista.addItem(reszleg);
     return cbReszlegLista;
@@ -160,7 +169,9 @@ public class FoAblak extends JFrame
       lbTalalat.setVisible(false);
       lDolgozoLista.setSelectedIndex(0); 
       lDolgozoLista.requestFocus();
-    }
+    } else 
+      new DolgozoFelvetel(this, modell);
+    
   }
 
   public void valueChanged(ListSelectionEvent e) {
