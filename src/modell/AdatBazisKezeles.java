@@ -273,32 +273,20 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
     try {
       kapcsolatNyit();
       PreparedStatement ps;
-      if(reszlegId==-1){
-        ps=kapcsolat.prepareStatement(
-//              "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId,\n" +
-//              "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name,\n" +
-//              "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId,\n" +
-//              "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName,\n" +
-//              "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle,\n" +
-//              "EMP_DETAILS_VIEW.SALARY as SALARY,\n" +
-//              "JOBS.MIN_SALARY as MIN_SALARY,\n" +
-//              "JOBS.MAX_SALARY as MAX_SALARY \n" +
-//              "FROM JOBS JOBS,\n" +
-//              "EMP_DETAILS_VIEW EMP_DETAILS_VIEW\n" +
-//              "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID "+
-//              "ORDER BY NAME");
-              "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId,\n" +
-              "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name,\n" +
-              "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId,\n" +
-              "JOBS.JOB_TITLE as jobTitle,\n" +
-              "EMP_DETAILS_VIEW.SALARY as SALARY,\n" +
- /**/             "JOBS.MIN_SALARY as MIN_SALARY,\n" +
- /**/             "JOBS.MAX_SALARY as MAX_SALARY\n" +
-              "FROM JOBS JOBS,\n" +
-              "EMPLOYEES EMP_DETAILS_VIEW\n" +
- /**/             "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID\n" +
-              "ORDER BY NAME");
-      //ps.setString(1, ""+reszlegId);
+      if(reszlegId==-1)
+      ps=kapcsolat.prepareStatement("SELECT E.EMPLOYEE_ID as empId, \n" +
+                                    "E.FIRST_NAME || ' ' || E.LAST_NAME AS name, \n" +
+                                    "D.DEPARTMENT_ID as depId, \n" +
+                                    "D.DEPARTMENT_NAME AS depName, \n" +
+                                    "JOBS.JOB_TITLE as jobTitle,\n" +
+                                    "E.SALARY as SALARY,\n" +
+                                    "E. HIRE_DATE \n" +
+                                    "FROM JOBS, EMPLOYEES E \n" +
+                                    "LEFT JOIN DEPARTMENTS D \n" +
+                                    "ON D.DEPARTMENT_ID = E.DEPARTMENT_ID \n" +
+                                    "WHERE JOBS.JOB_ID=E.JOB_ID \n" +
+                                    "ORDER BY name");
+        
       }else{
         ps=kapcsolat.prepareStatement(
               "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId,\n" +
@@ -323,9 +311,7 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
                                       rs.getInt("depId"), 
                                       (reszlegId==-1?"Részleg nélküli":rs.getString("depName")), 
                                       rs.getString("jobTitle"), 
-                                      rs.getInt("SALARY")/*, 
-                                      rs.getInt("MIN_SALARY"), 
-                                      rs.getInt("MAX_SALARY")*/);
+                                      rs.getInt("SALARY"));
         lista.add(dolgozo);
       }
     }
@@ -380,5 +366,4 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
     }
     return lista;    
   }
-  
 }
