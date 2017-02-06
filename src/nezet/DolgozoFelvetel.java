@@ -125,7 +125,7 @@ class DolgozoFelvetel extends JDialog {
           kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("Fizetés megadása kötelező", tfFizetes.getText(), 8, true);
           //TODO a fizetes mezobe csak szamokat lehet gepelni!!!!
           if (kotelezoAdatokMegadva) {
-            Reszleg reszleg = (Reszleg) ((JComboBox) e.getSource()).getSelectedItem();
+            Reszleg reszleg = (Reszleg) cbReszlegLista.getSelectedItem();
             int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
             int osszFiz=osszFizetesosszLetszam[0];
             int osszLetszam=osszFizetesosszLetszam[1];
