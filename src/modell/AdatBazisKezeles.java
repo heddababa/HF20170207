@@ -33,47 +33,7 @@ public class AdatBazisKezeles implements AdatbazisKapcsolat {
     }
   }
   
-  //TODO szukseges lekerdezesek es ezek visszaadasa
-  
-//  public ArrayList<String> lekerdezOsszesDolgozoListaja(String reszleg) { //Osszes dolgozo
-//    ArrayList<String> lista=new ArrayList<>();
-//    try {
-//      kapcsolatNyit();
-//      Statement s = kapcsolat.createStatement();
-//      ResultSet rs = s.executeQuery(
-//        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV\n"+
-//        "FROM EMPLOYEES E\n" +
-//        "ORDER BY NÉV");
-//      while(rs.next())
-//        lista.add(rs.getString("NÉV"));
-//      kapcsolatZar();
-//    }
-//    catch(SQLException e) {
-//      System.out.println(e.getMessage());
-//    }
-//    return lista;    
-//  } 
-  
-//  public ArrayList<String> lekerdezDolgozokListajaAdottReszleghez(String reszleg) { //Adott reszleg dolgozoi
-//    ArrayList<String> lista=new ArrayList<>();
-//    try {
-//      kapcsolatNyit();
-//      PreparedStatement ps=kapcsolat.prepareStatement(
-//        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV "+
-//        "FROM DEPARTMENTS D, EMPLOYEES E\n" +
-//        "WHERE D.DEPARTMENT_ID=E.DEPARTMENT_ID AND D.DEPARTMENT_NAME=?"+
-//        "ORDER BY NÉV");
-//      ps.setString(1, reszleg);
-//      ResultSet rs=ps.executeQuery();
-//      while(rs.next())
-//        lista.add(rs.getString("NÉV"));
-//      kapcsolatZar();
-//    }
-//    catch(SQLException e) {
-//      System.out.println(e.getMessage());
-//    }
-//    return lista;    
-//  }  
+  //***************************************************
   
   public int[] lekerdezMinMaxFizetes(String munkakorAzonosito) { //Adott munkakorhoz tartozo min es max fizetes
     int[] minmaxFizetes={0,0};
@@ -136,32 +96,38 @@ public class AdatBazisKezeles implements AdatbazisKapcsolat {
     return fizetes;
   }
 
-/*  
-public static void modositFizetés(int dolgozoID, int ujFizetes) { //Adott dolgozo fizetesenek modositasa adott osszegre
+  public static int[] lekerdezesOsszFizLetszReszlegenBelul(int reszlegID) { 
+    //Adott reszlegen belul dolgozok osszfizetese es letszama
+    int[] osszFizetesEsLetszam={0,0};
     try {
-//      kapcsolatNyit();
-//      PreparedStatement ps=kapcsolat.prepareStatement(
-//        "UPDATE EMPLOYEES \n" +
-//        "SET SALARY=?\n" +
-//        "WHERE EMPLOYEE_ID=?");
-//      ps.setInt(1, dolgozoID);
-//      ps.setInt(2, ujFizetes);
-//      ps.executeUpdate(); 
-//Teszthez
-      Statement s = kapcsolat.createStatement();
-      s.executeUpdate(
-              "update employees \n" +
-              "set salary=9000\n" +
-              "where employee_id=110");
-      kapcsolatZar();
+      kapcsolatNyit();
+      PreparedStatement ps=kapcsolat.prepareStatement(
+        "SELECT SUM(SALARY) AS osszFizetes, COUNT(SALARY) AS osszLetszam \n" +
+        "FROM EMPLOYEES\n" +
+        "WHERE DEPARTMENT_ID=?");
+      ps.setString(1, ""+reszlegID);
+      ResultSet rs=ps.executeQuery();        
+      rs.next();
+      osszFizetesEsLetszam[0]=rs.getInt("osszFizetes");
+      osszFizetesEsLetszam[1]=rs.getInt("osszLetszam");
     }
     catch (SQLException e) {
       System.out.println(e.getMessage());
     }
+    kapcsolatZar();
+    return osszFizetesEsLetszam;    
   }
-*/
 
   //******************Insert!
+
+/*  
+  eZ A HELYES SQL UTASITAS!
+  INSERT INTO EMPLOYEES 
+(EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID) 
+VALUES 
+( (select max(employee_id) from employees)+1, 'HEDVIG', 'KONCZ', 'HEDDA2', 0630333333, (select sysdate from sys.dual), 'IT_PROG', 4000, NULL, 103, 60)
+
+ */ 
   /*
   	private static void insertRecordIntoDbUserTable() throws SQLException {
 
