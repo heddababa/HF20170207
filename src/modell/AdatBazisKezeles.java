@@ -273,7 +273,7 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
     try {
       kapcsolatNyit();
       PreparedStatement ps;
-      if(reszlegId==-1)
+      if(reszlegId==-1){
       ps=kapcsolat.prepareStatement("SELECT E.EMPLOYEE_ID as empId, \n" +
                                     "E.FIRST_NAME || ' ' || E.LAST_NAME AS name, \n" +
                                     "D.DEPARTMENT_ID as depId, \n" +
@@ -295,11 +295,8 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
               "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName,\n" +
               "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle,\n" +
               "EMP_DETAILS_VIEW.SALARY as SALARY,\n" +
-   /**/           "JOBS.MIN_SALARY as MIN_SALARY,\n" +
-   /**/           "JOBS.MAX_SALARY as MAX_SALARY \n" +
               "FROM JOBS JOBS,\n" +
               "EMP_DETAILS_VIEW EMP_DETAILS_VIEW\n" +
-   /**/           "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID "+
               "AND EMP_DETAILS_VIEW.DEPARTMENT_ID=?\n" +
               "ORDER BY NAME");
         ps.setString(1, ""+reszlegId);
