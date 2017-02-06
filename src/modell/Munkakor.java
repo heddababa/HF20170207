@@ -3,11 +3,11 @@ package modell;
 public class Munkakor implements Comparable<Munkakor> {
 
   private String munkakorNev;
-  private int munkakorId;
+  private String munkakorId;
   private int minFizetes;
   private int maxFizetes;
 
-  public Munkakor(String munkakorNev, int munkakorId) {
+  public Munkakor(String munkakorNev, String munkakorId, int minFizetes, int maxFizetes) {
     this.munkakorNev = munkakorNev;
     this.munkakorId = munkakorId;
     this.minFizetes = minFizetes;
@@ -18,7 +18,7 @@ public class Munkakor implements Comparable<Munkakor> {
     return munkakorNev;
   }
 
-  public int getMunkakorId() {
+  public String getMunkakorId() {
     return munkakorId;
   }
   

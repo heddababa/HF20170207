@@ -35,64 +35,45 @@ public class AdatBazisKezeles implements AdatbazisKapcsolat {
   
   //TODO szukseges lekerdezesek es ezek visszaadasa
   
-  public ArrayList<String> lekerdezOsszesDolgozoListaja(String reszleg) { //Osszes dolgozo
-    ArrayList<String> lista=new ArrayList<>();
-    try {
-      kapcsolatNyit();
-      Statement s = kapcsolat.createStatement();
-      ResultSet rs = s.executeQuery(
-        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV\n"+
-        "FROM EMPLOYEES E\n" +
-        "ORDER BY NÉV");
-      while(rs.next())
-        lista.add(rs.getString("NÉV"));
-      kapcsolatZar();
-    }
-    catch(SQLException e) {
-      System.out.println(e.getMessage());
-    }
-    return lista;    
-  }
+//  public ArrayList<String> lekerdezOsszesDolgozoListaja(String reszleg) { //Osszes dolgozo
+//    ArrayList<String> lista=new ArrayList<>();
+//    try {
+//      kapcsolatNyit();
+//      Statement s = kapcsolat.createStatement();
+//      ResultSet rs = s.executeQuery(
+//        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV\n"+
+//        "FROM EMPLOYEES E\n" +
+//        "ORDER BY NÉV");
+//      while(rs.next())
+//        lista.add(rs.getString("NÉV"));
+//      kapcsolatZar();
+//    }
+//    catch(SQLException e) {
+//      System.out.println(e.getMessage());
+//    }
+//    return lista;    
+//  } 
   
-  public ArrayList<String> lekerdezMunkakorok() { //Összes munkakör
-    ArrayList<String> lista=new ArrayList<>();
-    try {
-      kapcsolatNyit();
-      Statement s = kapcsolat.createStatement();
-      ResultSet rs = s.executeQuery(
-        "SELECT JOB_TITLE AS MUNKAKOR\n"+
-        "FROM JOBS J\n" +
-        "ORDER BY MUNKAKOR");
-      while(rs.next())
-        lista.add(rs.getString("MUNKAKOR"));
-      kapcsolatZar();
-    }
-    catch(SQLException e) {
-      System.out.println(e.getMessage());
-    }
-    return lista;    
-  }
-  
-  public ArrayList<String> lekerdezDolgozokListajaAdottReszleghez(String reszleg) { //Adott reszleg dolgozoi
-    ArrayList<String> lista=new ArrayList<>();
-    try {
-      kapcsolatNyit();
-      PreparedStatement ps=kapcsolat.prepareStatement(
-        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV "+
-        "FROM DEPARTMENTS D, EMPLOYEES E\n" +
-        "WHERE D.DEPARTMENT_ID=E.DEPARTMENT_ID AND D.DEPARTMENT_NAME=?"+
-        "ORDER BY NÉV");
-      ps.setString(1, reszleg);
-      ResultSet rs=ps.executeQuery();
-      while(rs.next())
-        lista.add(rs.getString("NÉV"));
-      kapcsolatZar();
-    }
-    catch(SQLException e) {
-      System.out.println(e.getMessage());
-    }
-    return lista;    
-  }  
+//  public ArrayList<String> lekerdezDolgozokListajaAdottReszleghez(String reszleg) { //Adott reszleg dolgozoi
+//    ArrayList<String> lista=new ArrayList<>();
+//    try {
+//      kapcsolatNyit();
+//      PreparedStatement ps=kapcsolat.prepareStatement(
+//        "SELECT FIRST_NAME || ' ' || LAST_NAME AS NÉV "+
+//        "FROM DEPARTMENTS D, EMPLOYEES E\n" +
+//        "WHERE D.DEPARTMENT_ID=E.DEPARTMENT_ID AND D.DEPARTMENT_NAME=?"+
+//        "ORDER BY NÉV");
+//      ps.setString(1, reszleg);
+//      ResultSet rs=ps.executeQuery();
+//      while(rs.next())
+//        lista.add(rs.getString("NÉV"));
+//      kapcsolatZar();
+//    }
+//    catch(SQLException e) {
+//      System.out.println(e.getMessage());
+//    }
+//    return lista;    
+//  }  
   
   public int[] lekerdezMinMaxFizetes(String munkakorAzonosito) { //Adott munkakorhoz tartozo min es max fizetes
     int[] minmaxFizetes={0,0};
@@ -180,6 +161,68 @@ public static void modositFizetés(int dolgozoID, int ujFizetes) { //Adott dolgo
   }
 */
 
+  //******************Insert!
+  /*
+  	private static void insertRecordIntoDbUserTable() throws SQLException {
+
+		Connection dbConnection = null;
+		Statement statement = null;
+
+		String insertTableSQL = "INSERT INTO DBUSER"
+				+ "(USER_ID, USERNAME, CREATED_BY, CREATED_DATE) " + "VALUES"
+				+ "(1,'mkyong','system', " + "to_date('"
+				+ getCurrentTimeStamp() + "', 'yyyy/mm/dd hh24:mi:ss'))";
+
+		try {
+			dbConnection = getDBConnection();
+			statement = dbConnection.createStatement();
+
+			System.out.println(insertTableSQL);
+
+			// execute insert SQL stetement
+			statement.executeUpdate(insertTableSQL);
+
+			System.out.println("Record is inserted into DBUSER table!");
+
+		} catch (SQLException e) {
+
+			System.out.println(e.getMessage());
+
+		} finally {
+
+			if (statement != null) {
+				statement.close();
+			}
+
+			if (dbConnection != null) {
+				dbConnection.close();
+			}
+
+		}
+
+	}
+  
+  	private static String getCurrentTimeStamp() {
+
+		java.util.Date today = new java.util.Date();
+		return dateFormat.format(today.getTime());
+
+	}
+  
+  try {
+            PreparedStatement prepareStatement = connection.prepareStatement("INSERT INTO MYTABLE (USERID, USERNAME, EMAILADDRESS, PHONENUMBER, PROFILEPICTURE )"
+                    + " VALUES (?, ?, ?, ?, ?)");
+            prepareStatement.setString(1, "10");
+            prepareStatement.setString(2, "ALI");
+            prepareStatement.setString(3, "gdgrgrregeg");
+            prepareStatement.setString(4, "0501977498");
+            prepareStatement.setNull(5, NULL);
+            prepareStatement.execute();
+ } catch (SQLException e) {
+            System.out.println("IT DOES NOT WORK");
+        }
+  
+  */
  
 public static boolean modositFizetés(int dolgozoID, int ujFizetes){
   PreparedStatement ps = null;
@@ -230,7 +273,7 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
     try {
       kapcsolatNyit();
       PreparedStatement ps;
-      if(reszlegId==-1){
+      if(reszlegId==-1)
       ps=kapcsolat.prepareStatement("SELECT E.EMPLOYEE_ID as empId, \n" +
                                     "E.FIRST_NAME || ' ' || E.LAST_NAME AS name, \n" +
                                     "D.DEPARTMENT_ID as depId, \n" +
@@ -245,21 +288,21 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
                                     "ORDER BY name");
         
       }else{
-      ps=kapcsolat.prepareStatement(
+        ps=kapcsolat.prepareStatement(
               "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId,\n" +
               "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name,\n" +
               "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId,\n" +
               "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName,\n" +
               "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle,\n" +
               "EMP_DETAILS_VIEW.SALARY as SALARY,\n" +
-              "JOBS.MIN_SALARY as MIN_SALARY,\n" +
-              "JOBS.MAX_SALARY as MAX_SALARY \n" +
+   /**/           "JOBS.MIN_SALARY as MIN_SALARY,\n" +
+   /**/           "JOBS.MAX_SALARY as MAX_SALARY \n" +
               "FROM JOBS JOBS,\n" +
               "EMP_DETAILS_VIEW EMP_DETAILS_VIEW\n" +
-              "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID "+
+   /**/           "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID "+
               "AND EMP_DETAILS_VIEW.DEPARTMENT_ID=?\n" +
               "ORDER BY NAME");
-      ps.setString(1, ""+reszlegId);
+        ps.setString(1, ""+reszlegId);
       }
       ResultSet rs=ps.executeQuery();
       while(rs.next()){
@@ -289,8 +332,7 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
               "FROM DEPARTMENTS\n" +
               "WHERE DEPARTMENT_ID IN \n" +
               "(SELECT DISTINCT DEPARTMENT_ID FROM EMPLOYEES)\n" +
-              "ORDER BY 2");
-      
+              "ORDER BY 2");      
       while (rs.next()){
         Reszleg reszleg = new Reszleg(rs.getString("DEPARTMENT_NAME"), rs.getInt("DEPARTMENT_ID"));
         lista.add(reszleg);
@@ -301,5 +343,27 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
     }
     kapcsolatZar();
     return lista;
+  }
+  
+  public ArrayList<Munkakor> lekerdezMunkakorok() { //Összes munkakör
+    ArrayList<Munkakor> lista=new ArrayList<>();
+    try {
+      kapcsolatNyit();
+      Statement s = kapcsolat.createStatement();
+      ResultSet rs = s.executeQuery(
+        "SELECT JOB_ID, JOB_TITLE, MIN_SALARY, MAX_SALARY\n"+
+        "FROM JOBS J\n" +
+        "ORDER BY JOB_TITLE");
+      while(rs.next()) {
+        Munkakor munkakor = new Munkakor(rs.getString("JOB_TITLE"), rs.getString("JOB_ID"), 
+              rs.getInt("MIN_SALARY"), rs.getInt("MAX_SALARY"));
+        lista.add(munkakor);
+      }
+      kapcsolatZar();
+    }
+    catch(SQLException e) {
+      System.out.println(e.getMessage());
+    }
+    return lista;    
   }
 }
