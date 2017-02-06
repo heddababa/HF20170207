@@ -19,7 +19,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import modell.*;
 
-public class AdatBekeres extends JDialog implements KeyListener {
+public class AdatBekeres extends JDialog {
   private JButton btOK = new JButton("Mehet");
   
   public AdatBekeres(JFrame tulajdonos, Dolgozo dolgozo, AdatBazisKezeles modell) {
@@ -99,22 +99,5 @@ public class AdatBekeres extends JDialog implements KeyListener {
     });
     
     setVisible(true);
-  }
-
-  @Override
-  public void keyTyped(KeyEvent e) {
-    ;
-  }
-
-  @Override
-  public void keyPressed(KeyEvent e) {
-//    if (e.getKeyCode()==KeyEvent.VK_eSCAPE) {
-//      dispose();
-//    }  
-  }
-
-  @Override
-  public void keyReleased(KeyEvent e) {
-    ;
   }
 }  
