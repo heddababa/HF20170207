@@ -14,7 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import modell.AdatBazisKezeles;
@@ -24,8 +26,8 @@ import modell.Reszleg;
 
 class DolgozoFelvetel extends JDialog {    
   JLabel lbVezeteknev = new JLabel("* Vezetéknév:    ", SwingConstants.RIGHT);
-  JLabel lbKeresztnev = new JLabel("* Keresztnév:    ", SwingConstants.RIGHT);
-  JLabel lbEmail = new JLabel("E-mail cím:    ", SwingConstants.RIGHT);
+  JLabel lbKeresztnev = new JLabel("Keresztnév:    ", SwingConstants.RIGHT);
+  JLabel lbEmail = new JLabel("* E-mail cím:    ", SwingConstants.RIGHT);
   JLabel lbTelefonszam=new JLabel("Telefonszám:    ", SwingConstants.RIGHT);
   JLabel lbReszlegnev = new JLabel("* Részleg kiválasztása:    ", SwingConstants.RIGHT);
   JLabel lbMunkakor = new JLabel("* Munkakör kiválasztása:    ", SwingConstants.RIGHT);
@@ -35,6 +37,7 @@ class DolgozoFelvetel extends JDialog {
   private JTextField tfEmail = new JTextField("", 25);
   private JTextField tfTelefonszam = new JTextField("", 20);
   private JTextField tfFizetes = new JTextField("");
+  //private JSpinner spFizetes=new JSpinner;//(new SpinnerNumberModel(aktFizetes, adhatoMin, adhatoMax, 50));
   private JComboBox cbReszlegLista;
   private JComboBox cbMunkakorLista;
   private AdatBazisKezeles modell;
@@ -114,8 +117,25 @@ class DolgozoFelvetel extends JDialog {
       @Override
       public void mouseClicked(MouseEvent e) {
         try {
-          System.out.println("Adatok ellenorzese");
-          Ellenorzesek.emailEllenorzes(tfEmail.getText());
+          boolean kotelezoAdatokMegadva=false;
+          Ellenorzesek.hosszEllenorzes("A keresztnév túl hosszú", tfKeresztnev.getText(), 20, false);
+          kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("A vezetéknév túl hosszú", tfVezeteknev.getText(), 25, true);
+          kotelezoAdatokMegadva=kotelezoAdatokMegadva && Ellenorzesek.hosszEllenorzes("Az email túl hosszú", tfEmail.getText(), 25, true);
+          Ellenorzesek.hosszEllenorzes("A telefonszám túl hosszú", tfTelefonszam.getText(), 20, false);
+          kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("Fizetés megadása kötelező", tfFizetes.getText(), 8, true);
+          //TODO a fizetes mezobe csak szamokat lehet gepelni!!!!
+          if (kotelezoAdatokMegadva) {
+            Reszleg reszleg = (Reszleg) ((JComboBox) e.getSource()).getSelectedItem();
+            int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
+            int osszFiz=osszFizetesosszLetszam[0];
+            int osszLetszam=osszFizetesosszLetszam[1];
+            long adhatoMinFizetes=Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam));
+            long adhatoMaxFizetes=Math.round( osszFiz*0.05 + (osszFiz*1.95/osszLetszam));
+            int ujFizetes=Integer.parseInt(tfFizetes.getText());
+            if ( ujFizetes>adhatoMaxFizetes && ujFizetes < adhatoMinFizetes)
+              throw new IllegalArgumentException("A fizetés "+adhatoMinFizetes+" és "+adhatoMaxFizetes+" között lehet!");
+            System.out.println("Ide johet a mentes ha valoban minden adat klappol fentebb.");
+          }
         }
         catch (IllegalArgumentException hiba) {
           JOptionPane.showMessageDialog((Component) e.getSource(), 
@@ -131,7 +151,7 @@ class DolgozoFelvetel extends JDialog {
   private JComboBox reszlegListaBetoltes() {
     JComboBox cbReszlegLista = new JComboBox();
     ArrayList<Reszleg> reszlegek=modell.lekerdezReszleg();
-    cbReszlegLista.addItem(new Reszleg("", -1));
+  //  cbReszlegLista.addItem(new Reszleg("", -1));
     for (Reszleg reszleg : reszlegek)
       cbReszlegLista.addItem(reszleg);
     return cbReszlegLista;
@@ -140,7 +160,7 @@ class DolgozoFelvetel extends JDialog {
   private JComboBox munkakorListaBetoltes() {
     JComboBox cbMunkakorLista = new JComboBox();
     ArrayList<Munkakor> munkakorok=modell.lekerdezMunkakorok();
-    cbMunkakorLista.addItem(new Munkakor("", "", -1, -1));
+  //  cbMunkakorLista.addItem(new Munkakor("", "", -1, -1));
     for (Munkakor munkakor : munkakorok)
       cbMunkakorLista.addItem(munkakor);
     return cbMunkakorLista;
