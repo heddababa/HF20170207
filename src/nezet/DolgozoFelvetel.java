@@ -28,14 +28,13 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import modell.AdatBazisKezeles;
 import modell.Dolgozo;
-import modell.Ellenorzesek;
 import modell.Munkakor;
 import modell.Reszleg;
 
 class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/ {    
   JLabel lbVezeteknev = new JLabel("* Vezetéknév:    ", SwingConstants.RIGHT);
   JLabel lbKeresztnev = new JLabel("Keresztnév:    ", SwingConstants.RIGHT);
-  JLabel lbEmail = new JLabel("* E-mail cím:    ", SwingConstants.RIGHT);
+  JLabel lbEmail = new JLabel("* Nick név email címhez:    ", SwingConstants.RIGHT);
   JLabel lbTelefonszam=new JLabel("Telefonszám:    ", SwingConstants.RIGHT);
   JLabel lbReszlegnev = new JLabel("* Részleg kiválasztása:    ", SwingConstants.RIGHT);
   JLabel lbMunkakor = new JLabel("* Munkakör kiválasztása:    ", SwingConstants.RIGHT);
@@ -61,6 +60,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
     
     cbReszlegLista = reszlegListaBetoltes();
     cbReszlegLista.setSelectedIndex(0);
+    //System.out.println(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
     cbMunkakorLista = munkakorListaBetoltes();
 //    cbFonokLista = fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
 //    System.out.println("Fonokok listaja: "+cbFonokLista);
@@ -193,23 +193,44 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
                            tfFizetes.getText().length()>0);
     if (!kotelezoAdatokMegadva)
       throw new IllegalArgumentException("A kötelező adatok nincsenek megadva!");
-  //if (kotelezoAdatokMegadva) {
-    if (!Ellenorzesek.emailEllenorzes(tfEmail.getText()))
-      throw new IllegalArgumentException("A megadott email cím már létezik!");
-    Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
-    int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
-    int osszFiz=osszFizetesosszLetszam[0];
-    int osszLetszam=osszFizetesosszLetszam[1];
-    long adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
-            ((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes() );
-    long adhatoMaxFizetes=Math.min( Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam)),
-            ((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
-
-    int ujFizetes=Integer.parseInt(tfFizetes.getText());
-    if ( ujFizetes>adhatoMaxFizetes && ujFizetes < adhatoMinFizetes)
-      throw new IllegalArgumentException("A fizetés "+adhatoMinFizetes+" és "+adhatoMaxFizetes+" között lehet!");    
-   //}
+    if (!emailEllenorzes(tfEmail.getText()))
+      throw new IllegalArgumentException("A megadott email nick már létezik!");
+    try {
+      int ujFizetes=ujFizetes=Integer.parseInt(tfFizetes.getText());
+      Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
+      int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
+      int osszFiz=osszFizetesosszLetszam[0];
+      int osszLetszam=osszFizetesosszLetszam[1];
+      long adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
+              ((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes() );
+      long adhatoMaxFizetes=Math.min( Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam)),
+              ((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
+//      System.out.println("Osszfizetes: "+osszFiz+
+//              "\n osszletszam: "+osszLetszam+
+//              "\n (min) Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam): "+Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam))+
+//              "\n (max) Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam): "+Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam))+
+//              "\n minsalary: "+((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes()+
+//              "\n maxsalary: "+((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
+      if ( ujFizetes>adhatoMaxFizetes || ujFizetes < adhatoMinFizetes)
+        throw new IllegalArgumentException("A fizetés "+adhatoMinFizetes+" és "+adhatoMaxFizetes+" között lehet!"); 
+    } 
+    catch (NumberFormatException e) {
+      throw new IllegalArgumentException("A fizetés szám kell, hogy legyen!");
+    }    
     return kotelezoAdatokMegadva;    
+  }
+  
+//  private boolean hosszEllenorzes(String hibauzenet, String szoveg, int hossz, boolean kotelezo)
+//    throws IllegalArgumentException {
+//    if (szoveg.length()>hossz)
+//      throw new IllegalArgumentException(hibauzenet);    //Ez a kivetel miert nem gordul tovabb a hivo metodushoz? 
+//    return ( kotelezo? szoveg.length()>0 : true );
+//  }
+  
+  private boolean emailEllenorzes(String email) throws IllegalArgumentException {
+    boolean megfeleloEmail=false;
+    ArrayList<String> emailLista=AdatBazisKezeles.lekerdezEmail();
+    return !emailLista.contains(email);
   }
     
   private JComboBox reszlegListaBetoltes() {
