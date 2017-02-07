@@ -38,7 +38,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
   JLabel lbTelefonszam=new JLabel("Telefonszám:    ", SwingConstants.RIGHT);
   JLabel lbReszlegnev = new JLabel("* Részleg kiválasztása:    ", SwingConstants.RIGHT);
   JLabel lbMunkakor = new JLabel("* Munkakör kiválasztása:    ", SwingConstants.RIGHT);
-//  JLabel lbFonok = new JLabel("* Főnök kiválasztása:    ", SwingConstants.RIGHT);
+  JLabel lbFonok = new JLabel("* Főnök kiválasztása:    ", SwingConstants.RIGHT);
   JLabel lbFizetes=new JLabel("* Fizetés:    ", SwingConstants.RIGHT);
   private JTextField tfVezeteknev = new JTextField("", 25);
   private JTextField tfKeresztnev = new JTextField("", 20);
@@ -48,7 +48,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
   //private JSpinner spFizetes=new JSpinner;//(new SpinnerNumberModel(aktFizetes, adhatoMin, adhatoMax, 50));
   private JComboBox cbReszlegLista;
   private JComboBox cbMunkakorLista;
-//  private JComboBox cbFonokLista;
+  private JComboBox cbFonokLista;
   private AdatBazisKezeles modell;
   JButton btAdd = new JButton("Mentés");    
     
@@ -62,8 +62,8 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
     cbReszlegLista.setSelectedIndex(0);
     //System.out.println(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
     cbMunkakorLista = munkakorListaBetoltes();
-//    cbFonokLista = fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
-//    System.out.println("Fonokok listaja: "+cbFonokLista);
+    cbFonokLista = fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+    System.out.println("Fonokok listaja: "+cbFonokLista);
     
     JPanel pnVezeteknev=new JPanel(new GridLayout(1, 2));
     pnVezeteknev.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -251,13 +251,14 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
     return cbMunkakorLista;
   }
   
-//  private JComboBox fonokListaBetoltes(int reszlegId) {
-//    JComboBox cbFonokLista = new JComboBox();
-//    ArrayList<Dolgozo> fonokok=modell.lekerdezFonokokListaja(reszlegId);
-//    for (Dolgozo fonok : fonokok)
-//      cbFonokLista.addItem(fonok);
-//    return this.cbFonokLista;
-//  }
+  private JComboBox fonokListaBetoltes(int reszlegId) {
+    JComboBox cbFonokLista = new JComboBox();
+    ArrayList<Dolgozo> fonokok=modell.lekerdezFonokokListaja(reszlegId);
+    System.out.println("fönökök"+fonokok);
+    for (Dolgozo fonok : fonokok)
+      cbFonokLista.addItem(fonok);
+    return cbFonokLista;
+  }
 
   @Override
   public void keyTyped(KeyEvent e) {
