@@ -37,9 +37,9 @@ public class DolgozoFizetesModositas extends JDialog {
     setLocationRelativeTo(tulajdonos);
     //addKeyListener(this);
     
-    int[] minmaxFizetes=modell.lekerdezMinMaxFizetes(dolgozo.getMunkakor());
-    int minFizetes = minmaxFizetes[0]; //modell.lekerdezMinFizetes(dolgozo.getMunkakor());
-    int maxFizetes = minmaxFizetes[1]; //modell.lekerdezMaxFizetés(dolgozo.getMunkakor());
+    //int[] minmaxFizetes=modell.lekerdezMinMaxFizetes(dolgozo.getMunkakor());
+    int minFizetes = /*minmaxFizetes[0];*/modell.lekerdezMinFizetes(dolgozo.getMunkakor());
+    int maxFizetes = /*minmaxFizetes[1];*/ modell.lekerdezMaxFizetés(dolgozo.getMunkakor());
     int aktFizetes = dolgozo.getFizetes();
     int emeles5szazalek = Math.round(aktFizetes*1.05F);
     int csokkentes5szazalek =  Math.round(aktFizetes*0.95F);
