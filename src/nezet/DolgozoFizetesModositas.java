@@ -19,10 +19,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import modell.*;
 
-public class AdatBekeres extends JDialog {
+public class DolgozoFizetesModositas extends JDialog {
   private JButton btOK = new JButton("Mehet");
   
-  public AdatBekeres(JFrame tulajdonos, Dolgozo dolgozo, AdatBazisKezeles modell) {
+  public DolgozoFizetesModositas(JFrame tulajdonos, Dolgozo dolgozo, AdatBazisKezeles modell) {
     super(tulajdonos, "Adat bekérés", true);
     setLayout(new BorderLayout());
     JPanel pnButton=new JPanel();
@@ -37,8 +37,9 @@ public class AdatBekeres extends JDialog {
     setLocationRelativeTo(tulajdonos);
     //addKeyListener(this);
     
-    int minFizetes = modell.lekerdezMinFizetes(dolgozo.getMunkakor());
-    int maxFizetes = modell.lekerdezMaxFizetés(dolgozo.getMunkakor());
+    int[] minmaxFizetes=modell.lekerdezMinMaxFizetes(dolgozo.getMunkakor());
+    int minFizetes = minmaxFizetes[0]; //modell.lekerdezMinFizetes(dolgozo.getMunkakor());
+    int maxFizetes = minmaxFizetes[1]; //modell.lekerdezMaxFizetés(dolgozo.getMunkakor());
     int aktFizetes = dolgozo.getFizetes();
     int emeles5szazalek = Math.round(aktFizetes*1.05F);
     int csokkentes5szazalek =  Math.round(aktFizetes*0.95F);

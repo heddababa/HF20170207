@@ -4,9 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -20,17 +27,19 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import modell.AdatBazisKezeles;
+import modell.Dolgozo;
 import modell.Ellenorzesek;
 import modell.Munkakor;
 import modell.Reszleg;
 
-class DolgozoFelvetel extends JDialog {    
+class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/ {    
   JLabel lbVezeteknev = new JLabel("* Vezetéknév:    ", SwingConstants.RIGHT);
   JLabel lbKeresztnev = new JLabel("Keresztnév:    ", SwingConstants.RIGHT);
   JLabel lbEmail = new JLabel("* E-mail cím:    ", SwingConstants.RIGHT);
   JLabel lbTelefonszam=new JLabel("Telefonszám:    ", SwingConstants.RIGHT);
   JLabel lbReszlegnev = new JLabel("* Részleg kiválasztása:    ", SwingConstants.RIGHT);
   JLabel lbMunkakor = new JLabel("* Munkakör kiválasztása:    ", SwingConstants.RIGHT);
+//  JLabel lbFonok = new JLabel("* Főnök kiválasztása:    ", SwingConstants.RIGHT);
   JLabel lbFizetes=new JLabel("* Fizetés:    ", SwingConstants.RIGHT);
   private JTextField tfVezeteknev = new JTextField("", 25);
   private JTextField tfKeresztnev = new JTextField("", 20);
@@ -40,8 +49,9 @@ class DolgozoFelvetel extends JDialog {
   //private JSpinner spFizetes=new JSpinner;//(new SpinnerNumberModel(aktFizetes, adhatoMin, adhatoMax, 50));
   private JComboBox cbReszlegLista;
   private JComboBox cbMunkakorLista;
+//  private JComboBox cbFonokLista;
   private AdatBazisKezeles modell;
-  JButton btAdd = new JButton("Hozzáadás");    
+  JButton btAdd = new JButton("Mentés");    
     
   public DolgozoFelvetel(JFrame parent, AdatBazisKezeles modell) {
     super(parent, "Új dolgozó hozzáadása", true);
@@ -50,7 +60,10 @@ class DolgozoFelvetel extends JDialog {
     setLocationRelativeTo(this);
     
     cbReszlegLista = reszlegListaBetoltes();
+    cbReszlegLista.setSelectedIndex(0);
     cbMunkakorLista = munkakorListaBetoltes();
+//    cbFonokLista = fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+//    System.out.println("Fonokok listaja: "+cbFonokLista);
     
     JPanel pnVezeteknev=new JPanel(new GridLayout(1, 2));
     pnVezeteknev.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -83,19 +96,27 @@ class DolgozoFelvetel extends JDialog {
     pnReszleg.setBorder(new EmptyBorder(10, 10, 10, 10));
     pnReszleg.add(lbReszlegnev);
     pnReszleg.add(cbReszlegLista);
+  //  cbReszlegLista.addActionListener(this);
     
     JPanel pnMunkakor=new JPanel (new GridLayout(1, 2));
     pnMunkakor.setBorder(new EmptyBorder(10, 10, 10, 10));
     pnMunkakor.add(lbMunkakor);
     pnMunkakor.add(cbMunkakorLista);
     
+//    JPanel pnFonok=new JPanel (new GridLayout(1, 2));
+//    pnFonok.setBorder(new EmptyBorder(10, 10, 10, 10));
+//    pnFonok.add(lbFonok);
+//    pnFonok.add(cbFonokLista);
+    
     JPanel pnFizetes=new JPanel(new GridLayout(1, 2));
     pnFizetes.setBorder(new EmptyBorder(10, 10, 10, 10));
     pnFizetes.add(lbFizetes);
     pnFizetes.add(tfFizetes);
     tfFizetes.setText("");  
+    tfFizetes.addKeyListener(this);
     pnFizetes.add(tfFizetes);
     
+    //JPanel pnAdatbevitel=new JPanel(new GridLayout(8,2));
     JPanel pnAdatbevitel=new JPanel(new GridLayout(7,2));
     pnAdatbevitel.add(pnVezeteknev);
     pnAdatbevitel.add(pnKeresztnev);
@@ -103,6 +124,7 @@ class DolgozoFelvetel extends JDialog {
     pnAdatbevitel.add(pnTelefonszam);
     pnAdatbevitel.add(pnReszleg);
     pnAdatbevitel.add(pnMunkakor);
+   // pnAdatbevitel.add(pnFonok);
     pnAdatbevitel.add(pnFizetes);
     
     JPanel pnGomb=new JPanel(new GridLayout(1,1));
@@ -117,24 +139,35 @@ class DolgozoFelvetel extends JDialog {
       @Override
       public void mouseClicked(MouseEvent e) {
         try {
-          boolean kotelezoAdatokMegadva=false;
-          Ellenorzesek.hosszEllenorzes("A keresztnév túl hosszú", tfKeresztnev.getText(), 20, false);
-          kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("A vezetéknév túl hosszú", tfVezeteknev.getText(), 25, true);
-          kotelezoAdatokMegadva=kotelezoAdatokMegadva && Ellenorzesek.hosszEllenorzes("Az email túl hosszú", tfEmail.getText(), 25, true);
-          Ellenorzesek.hosszEllenorzes("A telefonszám túl hosszú", tfTelefonszam.getText(), 20, false);
-          kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("Fizetés megadása kötelező", tfFizetes.getText(), 8, true);
-          //TODO a fizetes mezobe csak szamokat lehet gepelni!!!!
-          if (kotelezoAdatokMegadva) {
-            Reszleg reszleg = (Reszleg) ((JComboBox) e.getSource()).getSelectedItem();
-            int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
-            int osszFiz=osszFizetesosszLetszam[0];
-            int osszLetszam=osszFizetesosszLetszam[1];
-            long adhatoMinFizetes=Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam));
-            long adhatoMaxFizetes=Math.round( osszFiz*0.05 + (osszFiz*1.95/osszLetszam));
-            int ujFizetes=Integer.parseInt(tfFizetes.getText());
-            if ( ujFizetes>adhatoMaxFizetes && ujFizetes < adhatoMinFizetes)
-              throw new IllegalArgumentException("A fizetés "+adhatoMinFizetes+" és "+adhatoMaxFizetes+" között lehet!");
-            System.out.println("Ide johet a mentes ha valoban minden adat klappol fentebb.");
+          boolean mehetAMentes=Ellenorzes();
+          if (mehetAMentes) {
+            try {
+              int managerId=AdatBazisKezeles.lekerdezReszlegFonoke(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+              boolean siker=AdatBazisKezeles.ujDolgozoFelvetele(tfKeresztnev.getText(), 
+                                                tfVezeteknev.getText(), 
+                                                tfEmail.getText(), 
+                                                tfTelefonszam.getText(), 
+                                                ((Munkakor)cbMunkakorLista.getSelectedItem()).getMunkakorId(), 
+                                                Integer.parseInt(tfFizetes.getText()), 
+                                                -1, 
+                                                managerId, 
+                                                ((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+              if (siker) { 
+                JOptionPane.showMessageDialog((Component) e.getSource(), 
+                  "A mentés sikeres volt.", 
+                  "Információ", 
+                  JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+              }   
+              else
+                JOptionPane.showMessageDialog((Component) e.getSource(), 
+                  "A mentés nem sikerült.", 
+                  "Hibaüzenet", 
+                  JOptionPane.ERROR_MESSAGE);
+            }
+            catch (SQLException ex) {
+              System.out.println("Nem sikerult a mentes SQLException!");
+            }            
           }
         }
         catch (IllegalArgumentException hiba) {
@@ -142,11 +175,42 @@ class DolgozoFelvetel extends JDialog {
                   hiba.getMessage(), 
                   "Hibaüzenet", 
                   JOptionPane.ERROR_MESSAGE);
-        }
-      }  
+        } 
+      }        
     });
     setVisible(true);
   }    
+  
+  private boolean Ellenorzes() throws IllegalArgumentException {
+    boolean kotelezoAdatokMegadva=false;
+//    Ellenorzesek.hosszEllenorzes("A keresztnév túl hosszú", tfKeresztnev.getText(), 20, false);
+//    kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("A vezetéknév túl hosszú", tfVezeteknev.getText(), 25, true);
+//    kotelezoAdatokMegadva=kotelezoAdatokMegadva && Ellenorzesek.hosszEllenorzes("Az email túl hosszú", tfEmail.getText(), 25, true);
+//    Ellenorzesek.hosszEllenorzes("A telefonszám túl hosszú", tfTelefonszam.getText(), 20, false);
+//    kotelezoAdatokMegadva=Ellenorzesek.hosszEllenorzes("Fizetés megadása kötelező", tfFizetes.getText(), 8, true);
+    kotelezoAdatokMegadva=(tfVezeteknev.getText().length()>0 &&
+                           tfEmail.getText().length()>0 &&
+                           tfFizetes.getText().length()>0);
+    if (!kotelezoAdatokMegadva)
+      throw new IllegalArgumentException("A kötelező adatok nincsenek megadva!");
+  //if (kotelezoAdatokMegadva) {
+    if (!Ellenorzesek.emailEllenorzes(tfEmail.getText()))
+      throw new IllegalArgumentException("A megadott email cím már létezik!");
+    Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
+    int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
+    int osszFiz=osszFizetesosszLetszam[0];
+    int osszLetszam=osszFizetesosszLetszam[1];
+    long adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
+            ((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes() );
+    long adhatoMaxFizetes=Math.min( Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam)),
+            ((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
+
+    int ujFizetes=Integer.parseInt(tfFizetes.getText());
+    if ( ujFizetes>adhatoMaxFizetes && ujFizetes < adhatoMinFizetes)
+      throw new IllegalArgumentException("A fizetés "+adhatoMinFizetes+" és "+adhatoMaxFizetes+" között lehet!");    
+   //}
+    return kotelezoAdatokMegadva;    
+  }
     
   private JComboBox reszlegListaBetoltes() {
     JComboBox cbReszlegLista = new JComboBox();
@@ -165,4 +229,38 @@ class DolgozoFelvetel extends JDialog {
       cbMunkakorLista.addItem(munkakor);
     return cbMunkakorLista;
   }
+  
+//  private JComboBox fonokListaBetoltes(int reszlegId) {
+//    JComboBox cbFonokLista = new JComboBox();
+//    ArrayList<Dolgozo> fonokok=modell.lekerdezFonokokListaja(reszlegId);
+//    for (Dolgozo fonok : fonokok)
+//      cbFonokLista.addItem(fonok);
+//    return this.cbFonokLista;
+//  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {
+    ;   
+  }
+
+  @Override
+  public void keyPressed(KeyEvent e) {
+    if (e.getSource()==tfFizetes) {
+      if ((e.getKeyChar()<'0' || e.getKeyChar()>'9') 
+          && (e.getKeyChar()!=KeyEvent.VK_BACK_SPACE)
+          && (e.getKeyChar()!=KeyEvent.VK_DELETE))
+        tfFizetes.setEditable(false);
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {
+    tfFizetes.setEditable(true);
+  }  
+
+//  @Override
+//  public void actionPerformed(ActionEvent e) {
+//    if (e.getSource()==cbReszlegLista)
+//      cbFonokLista=fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+//  }
 }

@@ -31,9 +31,29 @@ public class AdatBazisKezeles implements AdatbazisKapcsolat {
     catch (SQLException e) {
       System.out.println("Hiba! Nem sikerült lezárni a kapcsolatot az adatbázis-szerverrel.");
     }
-  }
+  } 
   
   //***************************************************
+  
+  public static int lekerdezReszlegFonoke(int reszlegId) {
+     int managerId=100;
+     try {
+      kapcsolatNyit();
+      PreparedStatement ps=kapcsolat.prepareStatement(
+        "SELECT MANAGER_ID\n" +
+        "FROM DEPARTMENTS\n" +
+        "WHERE DEPARTMENT_ID=?");
+      ps.setInt(1, reszlegId);
+      ResultSet rs=ps.executeQuery();        
+      rs.next();
+      managerId=rs.getInt("MANAGER_ID");
+    }
+    catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+    kapcsolatZar(); 
+    return managerId;
+  }
   
   public int[] lekerdezMinMaxFizetes(String munkakorAzonosito) { //Adott munkakorhoz tartozo min es max fizetes
     int[] minmaxFizetes={0,0};
@@ -119,76 +139,43 @@ public class AdatBazisKezeles implements AdatbazisKapcsolat {
   }
 
   //******************Insert!
-
-/*  
-  eZ A HELYES SQL UTASITAS!
-  INSERT INTO EMPLOYEES 
-(EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID) 
-VALUES 
-( (select max(employee_id) from employees)+1, 'HEDVIG', 'KONCZ', 'HEDDA2', 0630333333, (select sysdate from sys.dual), 'IT_PROG', 4000, NULL, 103, 60)
-
- */ 
-  /*
-  	private static void insertRecordIntoDbUserTable() throws SQLException {
-
-		Connection dbConnection = null;
-		Statement statement = null;
-
-		String insertTableSQL = "INSERT INTO DBUSER"
-				+ "(USER_ID, USERNAME, CREATED_BY, CREATED_DATE) " + "VALUES"
-				+ "(1,'mkyong','system', " + "to_date('"
-				+ getCurrentTimeStamp() + "', 'yyyy/mm/dd hh24:mi:ss'))";
-
-		try {
-			dbConnection = getDBConnection();
-			statement = dbConnection.createStatement();
-
-			System.out.println(insertTableSQL);
-
-			// execute insert SQL stetement
-			statement.executeUpdate(insertTableSQL);
-
-			System.out.println("Record is inserted into DBUSER table!");
-
-		} catch (SQLException e) {
-
-			System.out.println(e.getMessage());
-
-		} finally {
-
-			if (statement != null) {
-				statement.close();
-			}
-
-			if (dbConnection != null) {
-				dbConnection.close();
-			}
-
-		}
-
-	}
-  
-  	private static String getCurrentTimeStamp() {
-
-		java.util.Date today = new java.util.Date();
-		return dateFormat.format(today.getTime());
-
-	}
-  
-  try {
-            PreparedStatement prepareStatement = connection.prepareStatement("INSERT INTO MYTABLE (USERID, USERNAME, EMAILADDRESS, PHONENUMBER, PROFILEPICTURE )"
-                    + " VALUES (?, ?, ?, ?, ?)");
-            prepareStatement.setString(1, "10");
-            prepareStatement.setString(2, "ALI");
-            prepareStatement.setString(3, "gdgrgrregeg");
-            prepareStatement.setString(4, "0501977498");
-            prepareStatement.setNull(5, NULL);
-            prepareStatement.execute();
- } catch (SQLException e) {
-            System.out.println("IT DOES NOT WORK");
-        }
-  
-  */
+	public static boolean ujDolgozoFelvetele(String firstName, String lastName, 
+      String email, String phoneNumber, String jobId, int salary, double commissionPCT, int managerID, int departmentID) 
+      throws SQLException {
+    boolean beszurasOk=false;
+    kapcsolatNyit();
+		String insertTableSQL = 
+        "INSERT INTO EMPLOYEES \n" +
+        "(EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, " +
+        "COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID) \n" +
+        "VALUES \n" +
+        "( (select max(employee_id) from employees)+1, ?1, ?2, ?3, "+
+        "?4, (select sysdate from sys.dual), ?5, ?6, ?7, ?8, ?9)";    
+    try {
+      kapcsolatNyit();
+      PreparedStatement ps=kapcsolat.prepareStatement(insertTableSQL);
+      ps.setString(1, firstName);
+      ps.setString(2, lastName);
+      ps.setString(3, email);
+      ps.setString(4, phoneNumber);
+      ps.setString(5, jobId);
+      ps.setInt(6, salary);
+      if (commissionPCT==-1)
+        ps.setInt(7, 0); //ide null ertek kellene, ps.setNull(7, NULL);
+      else
+        ps.setDouble(7, commissionPCT);
+      ps.setInt(8, managerID);
+      ps.setInt(9, departmentID);      
+      ResultSet rs=ps.executeQuery();        
+      rs.next();
+      beszurasOk=true;
+    }
+    catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+    kapcsolatZar();
+    return beszurasOk;
+  }
  
 public static boolean modositFizetés(int dolgozoID, int ujFizetes){
   PreparedStatement ps = null;
@@ -328,5 +315,54 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
       System.out.println(e.getMessage());
     }
     return lista;    
+  }
+  
+  public static ArrayList<String> lekerdezEmail() {
+    ArrayList<String> lista = new ArrayList<>();
+    try {
+      kapcsolatNyit();
+      Statement s = kapcsolat.createStatement();
+      ResultSet rs = s.executeQuery(
+              "SELECT EMAIL FROM EMPLOYEES ORDER BY EMAIL");      
+      while (rs.next())
+        lista.add(rs.getString("EMAIL"));
+    }
+    catch (SQLException e) {
+      e.printStackTrace();
+    }
+    kapcsolatZar();
+    return lista;
+  }
+
+  public ArrayList<Dolgozo> lekerdezFonokokListaja(int reszlegId) {
+    ArrayList<Dolgozo> lista=new ArrayList<>();
+    try {
+      kapcsolatNyit();
+      PreparedStatement ps;
+      ps=kapcsolat.prepareStatement(
+              "select employee_id as empId, first_name || ' ' || last_name as name, e.department_id as depId, d.department_name as depName, JOB_TITLE as jobTitle, salary\n" +
+              "from employees e, departments d, jobs j\n" +
+              "where e.department_id=d.department_id and e.job_id=j.job_id and\n" +
+              "e.employee_id in (select distinct e.manager_id\n" +
+              "from employees e, departments d\n" +
+              "where e.department_id=d.department_id and e.department_id=?)\n" +
+              "order by name");
+      ps.setInt(1, reszlegId);
+      ResultSet rs=ps.executeQuery();
+      while(rs.next()){
+        Dolgozo dolgozo = new Dolgozo(rs.getInt("empId"), 
+                                      rs.getString("name"), 
+                                      rs.getInt("depId"), 
+                                      rs.getString("depName"), 
+                                      rs.getString("jobTitle"), 
+                                      rs.getInt("SALARY"));
+        lista.add(dolgozo);
+      }
+    }
+    catch(SQLException e) {
+      System.out.println(e.getMessage());
+    }
+    kapcsolatZar();
+    return lista;   
   }
 }
