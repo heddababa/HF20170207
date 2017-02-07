@@ -31,7 +31,7 @@ import modell.Dolgozo;
 import modell.Munkakor;
 import modell.Reszleg;
 
-class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/ {    
+class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {    
   JLabel lbVezeteknev = new JLabel("* Vezetéknév:    ", SwingConstants.RIGHT);
   JLabel lbKeresztnev = new JLabel("Keresztnév:    ", SwingConstants.RIGHT);
   JLabel lbEmail = new JLabel("* Nick név email címhez:    ", SwingConstants.RIGHT);
@@ -55,7 +55,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
   public DolgozoFelvetel(JFrame parent, AdatBazisKezeles modell) {
     super(parent, "Új dolgozó hozzáadása", true);
     this.modell=modell;
-    setSize(350, 400);
+    setSize(400, 400);
     setLocationRelativeTo(this);
     
     cbReszlegLista = reszlegListaBetoltes();
@@ -103,10 +103,10 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
     pnMunkakor.add(lbMunkakor);
     pnMunkakor.add(cbMunkakorLista);
     
-//    JPanel pnFonok=new JPanel (new GridLayout(1, 2));
-//    pnFonok.setBorder(new EmptyBorder(10, 10, 10, 10));
-//    pnFonok.add(lbFonok);
-//    pnFonok.add(cbFonokLista);
+    JPanel pnFonok=new JPanel (new GridLayout(1, 2));
+    pnFonok.setBorder(new EmptyBorder(10, 10, 10, 10));
+    pnFonok.add(lbFonok);
+    pnFonok.add(cbFonokLista);
     
     JPanel pnFizetes=new JPanel(new GridLayout(1, 2));
     pnFizetes.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -116,15 +116,15 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
     tfFizetes.addKeyListener(this);
     pnFizetes.add(tfFizetes);
     
-    //JPanel pnAdatbevitel=new JPanel(new GridLayout(8,2));
-    JPanel pnAdatbevitel=new JPanel(new GridLayout(7,2));
+    JPanel pnAdatbevitel=new JPanel(new GridLayout(8,2));
+    //JPanel pnAdatbevitel=new JPanel(new GridLayout(7,2));
     pnAdatbevitel.add(pnVezeteknev);
     pnAdatbevitel.add(pnKeresztnev);
     pnAdatbevitel.add(pnEmail);
     pnAdatbevitel.add(pnTelefonszam);
     pnAdatbevitel.add(pnReszleg);
     pnAdatbevitel.add(pnMunkakor);
-   // pnAdatbevitel.add(pnFonok);
+    pnAdatbevitel.add(pnFonok);
     pnAdatbevitel.add(pnFizetes);
     
     JPanel pnGomb=new JPanel(new GridLayout(1,1));
@@ -280,9 +280,9 @@ class DolgozoFelvetel extends JDialog implements KeyListener/*, ActionListener*/
     tfFizetes.setEditable(true);
   }  
 
-//  @Override
-//  public void actionPerformed(ActionEvent e) {
-//    if (e.getSource()==cbReszlegLista)
-//      cbFonokLista=fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
-//  }
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource()==cbReszlegLista)
+      cbFonokLista=fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+  }
 }
