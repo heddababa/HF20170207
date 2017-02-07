@@ -51,6 +51,8 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
   private JComboBox cbFonokLista;
   private AdatBazisKezeles modell;
   JButton btAdd = new JButton("Mentés");    
+  long adhatoMinFizetes=0;
+  long adhatoMaxFizetes=0;
     
   public DolgozoFelvetel(JFrame parent, AdatBazisKezeles modell) {
     super(parent, "Új dolgozó hozzáadása", true);
@@ -100,6 +102,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     pnMunkakor.setBorder(new EmptyBorder(10, 10, 10, 10));
     pnMunkakor.add(lbMunkakor);
     pnMunkakor.add(cbMunkakorLista);
+    cbMunkakorLista.addActionListener(this);   
     
     JPanel pnFonok=new JPanel (new GridLayout(1, 2));
     pnFonok.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -113,6 +116,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     tfFizetes.setText("");  
     tfFizetes.addKeyListener(this);
     pnFizetes.add(tfFizetes);
+    setLbFizetes();
     
     JPanel pnAdatbevitel=new JPanel(new GridLayout(8,2));
     pnAdatbevitel.add(pnVezeteknev);
@@ -139,7 +143,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
           boolean mehetAMentes=Ellenorzes();
           if (mehetAMentes) {
             try {
-              int managerId=AdatBazisKezeles.lekerdezReszlegFonoke(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+              //int managerId=AdatBazisKezeles.lekerdezReszlegFonoke(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
               boolean siker=AdatBazisKezeles.ujDolgozoFelvetele(tfKeresztnev.getText(), 
                                                 tfVezeteknev.getText(), 
                                                 tfEmail.getText(), 
@@ -147,7 +151,8 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
                                                 ((Munkakor)cbMunkakorLista.getSelectedItem()).getMunkakorId(), 
                                                 Integer.parseInt(tfFizetes.getText()), 
                                                 -1, 
-                                                managerId, 
+                                                //managerId,
+                                                ((Dolgozo)cbFonokLista.getSelectedItem()).getEmpID(),
                                                 ((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
               if (siker) { 
                 JOptionPane.showMessageDialog((Component) e.getSource(), 
@@ -178,6 +183,18 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     setVisible(true);
   }    
   
+  private void setLbFizetes() {
+    Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
+    int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
+    int osszFiz=osszFizetesosszLetszam[0];
+    int osszLetszam=osszFizetesosszLetszam[1];
+    /*long*/ adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
+            ((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes() );
+    /*long*/ adhatoMaxFizetes=Math.min( Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam)),
+            ((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
+    lbFizetes.setText("* Fizetés ("+adhatoMinFizetes+" - "+adhatoMaxFizetes+"):    ");
+  }
+  
   private boolean Ellenorzes() throws IllegalArgumentException {
     boolean kotelezoAdatokMegadva=false;
 //    Ellenorzesek.hosszEllenorzes("A keresztnév túl hosszú", tfKeresztnev.getText(), 20, false);
@@ -194,14 +211,15 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
       throw new IllegalArgumentException("A megadott email nick már létezik!");
     try {
       int ujFizetes=ujFizetes=Integer.parseInt(tfFizetes.getText());
-      Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
-      int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
-      int osszFiz=osszFizetesosszLetszam[0];
-      int osszLetszam=osszFizetesosszLetszam[1];
-      long adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
-              ((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes() );
-      long adhatoMaxFizetes=Math.min( Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam)),
-              ((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
+//      Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
+//      int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
+//      int osszFiz=osszFizetesosszLetszam[0];
+//      int osszLetszam=osszFizetesosszLetszam[1];
+//      long adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
+//              ((Munkakor)cbMunkakorLista.getSelectedItem()).getMinFizetes() );
+//      long adhatoMaxFizetes=Math.min( Math.round( osszFiz*0.05 + (osszFiz*1.05/osszLetszam)),
+//              ((Munkakor)cbMunkakorLista.getSelectedItem()).getMaxFizetes());
+      
 //      System.out.println("Osszfizetes: "+osszFiz+
 //              "\n osszletszam: "+osszLetszam+
 //              "\n (min) Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam): "+Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam))+
@@ -282,6 +300,9 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
       for (Dolgozo fonok : fonokok) {
         cbFonokLista.addItem(fonok);
       }
+      setLbFizetes();
     }
+    if (e.getSource() == cbMunkakorLista)
+      setLbFizetes();
   }
 }
