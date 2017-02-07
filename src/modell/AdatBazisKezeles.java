@@ -242,13 +242,14 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
         
       }else{
         ps=kapcsolat.prepareStatement(
-              "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId, \n" +
-              "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name, \n" +
-              "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId, \n" +
-              "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName, \n" +
-              "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle, \n" +
-              "EMP_DETAILS_VIEW.SALARY as SALARY \n" +
-              "FROM JOBS JOBS, \n" +
+              "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId,\n" +
+              "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name,\n" +
+              "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId,\n" +
+              "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName,\n" +
+              "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle,\n" +
+              "EMP_DETAILS_VIEW.SALARY as SALARY,\n" +
+              "EMPLOYEES.HIRE_DATE \n" +
+              "FROM JOBS JOBS,\n" +
               "EMP_DETAILS_VIEW EMP_DETAILS_VIEW,\n" +
               "EMPLOYEES\n" +
               "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID\n" +
@@ -365,7 +366,7 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
                                       rs.getString("depName"), 
                                       rs.getString("jobTitle"), 
                                       rs.getInt("SALARY"), 
-                                      rs.getDate(HIRE_DATE));
+                                      rs.getDate("HIRE_DATE"));
         lista.add(dolgozo);
       }
     }

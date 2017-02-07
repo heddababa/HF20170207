@@ -1,5 +1,7 @@
 package modell;
 
+import java.sql.Date;
+
 
 public class Dolgozo implements Comparable<Dolgozo> {
 
@@ -9,18 +11,16 @@ public class Dolgozo implements Comparable<Dolgozo> {
   private String reszlegNev;
   private String munkakor;
   private int fizetes;
-  //private int minFizetes;
-  //private int maxFizetés;
+  private Date felveteliDatum;
 
-  public Dolgozo(int empID, String nev, int depId, String reszlegNev, String munkakor, int fizetes /*, int minFizetes, int maxFizetés*/) {
+  public Dolgozo(int empID, String nev, int depId, String reszlegNev, String munkakor, int fizetes, Date felveteliDatum /*, int minFizetes, int maxFizetés*/) {
     this.empID = empID;
     this.nev = nev;
     this.depId = depId;
     this.reszlegNev = reszlegNev;
     this.munkakor = munkakor;
     this.fizetes = fizetes;
-    //this.minFizetes = minFizetes;
-    //this.maxFizetés = maxFizetés;
+    this.felveteliDatum= felveteliDatum;
   }
 
   public int getEmpID() {
