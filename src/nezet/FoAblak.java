@@ -134,10 +134,6 @@ public class FoAblak extends JFrame
 
   private JPanel panelKeszit(JPanel pnReszlegek) {
     JPanel ujPn = new JPanel();
-//    ujPn.add(new JPanel(), BorderLayout.PAGE_START);
-//    ujPn.add(new JPanel(), BorderLayout.PAGE_END);
-//    ujPn.add(new JPanel(), BorderLayout.LINE_START);
-//    ujPn.add(new JPanel(), BorderLayout.LINE_START);
     ujPn.add(pnReszlegek);
     return ujPn;
   }
@@ -170,7 +166,7 @@ public class FoAblak extends JFrame
     }
     if (e.getSource()==btUjDolgozo){
       new DolgozoFelvetel(this, modell);
-      dolgozoListaBetoltes(-1);
+      tDolgozoTable.setModel(dolgozoListaBetoltes(-1));
     }
       
   }
