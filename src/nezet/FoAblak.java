@@ -200,12 +200,12 @@ public class FoAblak extends JFrame
         }
         if (dolgozokListaSzükitett.size() == 0) {
           lbTalalat.setVisible(true);
+          dolgozokListaSzükitett.clear();
         } else {
           lbTalalat.setVisible(false);
         }
         ((MyTableModell) tDolgozoTable.getModel()).setDolgozoLista(dolgozokListaSzükitett);
         ((MyTableModell) tDolgozoTable.getModel()).fireTableDataChanged();
-        tDolgozoTable.addRowSelectionInterval(0, 0);
       } else {
         lbTalalat.setVisible(false);
         Reszleg reszleg = (Reszleg) cbReszlegLista.getSelectedItem();
