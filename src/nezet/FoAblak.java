@@ -167,6 +167,7 @@ public class FoAblak extends JFrame
     if (e.getSource()==btUjDolgozo){
       new DolgozoFelvetel(this, modell);
       tDolgozoTable.setModel(dolgozoListaBetoltes(-1));
+      cbReszlegLista.setSelectedIndex(0);
     }
       
   }
