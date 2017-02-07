@@ -102,7 +102,7 @@ public class FoAblak extends JFrame
           DefaultListModel dlm = (DefaultListModel) lDolgozoLista.getModel();
           if(dolgozo != null){
             int dolgozoIndex = dlm.indexOf(dolgozo);
-            new AdatBekeres((JFrame) SwingUtilities.getRoot((Component) e.getSource()), dolgozo, modell);
+            new DolgozoFizetesModositas((JFrame) SwingUtilities.getRoot((Component) e.getSource()), dolgozo, modell);
             //new AdatBekeres(this, dolgozo, modell);
             dlm.setElementAt(dolgozo, dolgozoIndex);
           }
@@ -120,7 +120,7 @@ public class FoAblak extends JFrame
             if(dolgozo != null){
               int dolgozoIndex = dlm.indexOf(dolgozo);
               //System.out.println(dolgozo.getNev() + " " + dolgozo.getMunkakor());
-              new AdatBekeres((JFrame) SwingUtilities.getRoot((JList) e.getSource()), dolgozo, modell);
+              new DolgozoFizetesModositas((JFrame) SwingUtilities.getRoot((JList) e.getSource()), dolgozo, modell);
               dlm.setElementAt(dolgozo, dolgozoIndex);
             }
         }
