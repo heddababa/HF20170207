@@ -60,10 +60,8 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     
     cbReszlegLista = reszlegListaBetoltes();
     cbReszlegLista.setSelectedIndex(0);
-    //System.out.println(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
     cbMunkakorLista = munkakorListaBetoltes();
     cbFonokLista = fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
-    System.out.println("Fonokok listaja: "+cbFonokLista);
     
     JPanel pnVezeteknev=new JPanel(new GridLayout(1, 2));
     pnVezeteknev.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -117,7 +115,6 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     pnFizetes.add(tfFizetes);
     
     JPanel pnAdatbevitel=new JPanel(new GridLayout(8,2));
-    //JPanel pnAdatbevitel=new JPanel(new GridLayout(7,2));
     pnAdatbevitel.add(pnVezeteknev);
     pnAdatbevitel.add(pnKeresztnev);
     pnAdatbevitel.add(pnEmail);
@@ -236,7 +233,6 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
   private JComboBox reszlegListaBetoltes() {
     JComboBox cbReszlegLista = new JComboBox();
     ArrayList<Reszleg> reszlegek=modell.lekerdezReszleg();
-  //  cbReszlegLista.addItem(new Reszleg("", -1));
     for (Reszleg reszleg : reszlegek)
       cbReszlegLista.addItem(reszleg);
     return cbReszlegLista;
@@ -245,7 +241,6 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
   private JComboBox munkakorListaBetoltes() {
     JComboBox cbMunkakorLista = new JComboBox();
     ArrayList<Munkakor> munkakorok=modell.lekerdezMunkakorok();
-  //  cbMunkakorLista.addItem(new Munkakor("", "", -1, -1));
     for (Munkakor munkakor : munkakorok)
       cbMunkakorLista.addItem(munkakor);
     return cbMunkakorLista;
@@ -254,7 +249,6 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
   private JComboBox fonokListaBetoltes(int reszlegId) {
     JComboBox cbFonokLista = new JComboBox();
     ArrayList<Dolgozo> fonokok=modell.lekerdezFonokokListaja(reszlegId);
-    System.out.println("fönökök"+fonokok);
     for (Dolgozo fonok : fonokok)
       cbFonokLista.addItem(fonok);
     return cbFonokLista;
@@ -285,11 +279,9 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     if (e.getSource() == cbReszlegLista) {
       cbFonokLista.removeAllItems();
       ArrayList<Dolgozo> fonokok = modell.lekerdezFonokokListaja(((Reszleg) cbReszlegLista.getSelectedItem()).getReszlegId());
-      System.out.println("fönökök" + fonokok);
       for (Dolgozo fonok : fonokok) {
         cbFonokLista.addItem(fonok);
       }
-
     }
   }
 }
