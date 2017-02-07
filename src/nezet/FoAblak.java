@@ -46,6 +46,7 @@ public class FoAblak extends JFrame
   private AdatBazisKezeles modell;
   private JTable tDolgozoTable = new JTable(new DefaultTableModel());
   private JScrollPane spDolgozoLista = new JScrollPane(tDolgozoTable);
+  private ArrayList<Dolgozo> dolgozok;
 
   public FoAblak(AdatBazisKezeles modell) {
     this.modell = modell;
@@ -149,7 +150,7 @@ public class FoAblak extends JFrame
   }
 
   private TableModel dolgozoListaBetoltes(int reszlegID) {
-    ArrayList<Dolgozo> dolgozok = modell.lekerdezDolgozokListajaAdottReszleghez(reszlegID);
+    dolgozok = modell.lekerdezDolgozokListajaAdottReszleghez(reszlegID);
     MyTableModell mytm = new MyTableModell(dolgozok);
     return mytm;
   }
@@ -177,15 +178,18 @@ public class FoAblak extends JFrame
     final String newline = "\n";
 
     public void insertUpdate(DocumentEvent e) {
+      System.out.println("Ez most beszúrás");
       updateLog(e);
     }
 
     public void removeUpdate(DocumentEvent e) {
+      System.out.println("Ez most törlés");
       updateLog(e);
     }
 
     public void changedUpdate(DocumentEvent e) {
       //Plain text components don't fire these events.
+      System.out.println("Ez most velmi változtatás");
       updateLog(e);
     }
 
@@ -193,10 +197,10 @@ public class FoAblak extends JFrame
       if (tfDolgozoKeres.getText().length() > 0) {
         String keres = tfDolgozoKeres.getText().toLowerCase();
         ArrayList<Dolgozo> dolgozokListaSzükitett = new ArrayList<>();
-        ArrayList<Dolgozo> dolgozoListaAktualis = ((MyTableModell) tDolgozoTable.getModel()).getDolgozLista();
-        for (int i = 0; i < dolgozoListaAktualis.size(); i++) {
-          if (dolgozoListaAktualis.get(i).getNev().toLowerCase().contains(keres)) {
-            dolgozokListaSzükitett.add(dolgozoListaAktualis.get(i));
+        //ArrayList<Dolgozo> dolgozoListaAktualis = ((MyTableModell) tDolgozoTable.getModel()).getDolgozLista();
+        for (int i = 0; i < dolgozok.size(); i++) {
+          if (dolgozok.get(i).getNev().toLowerCase().contains(keres)) {
+            dolgozokListaSzükitett.add(dolgozok.get(i));
           }
         }
         if (dolgozokListaSzükitett.size() == 0) {
@@ -209,8 +213,11 @@ public class FoAblak extends JFrame
         ((MyTableModell) tDolgozoTable.getModel()).fireTableDataChanged();
       } else {
         lbTalalat.setVisible(false);
-        Reszleg reszleg = (Reszleg) cbReszlegLista.getSelectedItem();
-        tDolgozoTable.setModel(dolgozoListaBetoltes(reszleg.getReszlegId()));
+        ((MyTableModell) tDolgozoTable.getModel()).setDolgozoLista(dolgozok);
+        ((MyTableModell) tDolgozoTable.getModel()).fireTableDataChanged();
+        
+//        Reszleg reszleg = (Reszleg) cbReszlegLista.getSelectedItem();
+//        tDolgozoTable.setModel(dolgozoListaBetoltes(reszleg.getReszlegId()));
         tfDolgozoKeres.setText("");
         lbTalalat.setVisible(false);
         //tDolgozoTable.requestFocus();
