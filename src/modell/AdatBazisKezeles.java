@@ -233,7 +233,7 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
                                     "D.DEPARTMENT_NAME AS depName, \n" +
                                     "JOBS.JOB_TITLE as jobTitle,\n" +
                                     "E.SALARY as SALARY,\n" +
-                                    "E. HIRE_DATE \n" +
+                                    "E.HIRE_DATE \n" +
                                     "FROM JOBS, EMPLOYEES E \n" +
                                     "LEFT JOIN DEPARTMENTS D \n" +
                                     "ON D.DEPARTMENT_ID = E.DEPARTMENT_ID \n" +
@@ -242,15 +242,18 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
         
       }else{
         ps=kapcsolat.prepareStatement(
-              "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId,\n" +
-              "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name,\n" +
-              "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId,\n" +
-              "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName,\n" +
-              "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle,\n" +
-              "EMP_DETAILS_VIEW.SALARY as SALARY,\n" +
-              "FROM JOBS JOBS,\n" +
-              "EMP_DETAILS_VIEW EMP_DETAILS_VIEW\n" +
-              "AND EMP_DETAILS_VIEW.DEPARTMENT_ID=?\n" +
+              "SELECT EMP_DETAILS_VIEW.EMPLOYEE_ID as empId, \n" +
+              "EMP_DETAILS_VIEW.FIRST_NAME || ' ' || EMP_DETAILS_VIEW.LAST_NAME as name, \n" +
+              "EMP_DETAILS_VIEW.DEPARTMENT_ID as depId, \n" +
+              "EMP_DETAILS_VIEW.DEPARTMENT_NAME as depName, \n" +
+              "EMP_DETAILS_VIEW.JOB_TITLE as jobTitle, \n" +
+              "EMP_DETAILS_VIEW.SALARY as SALARY \n" +
+              "FROM JOBS JOBS, \n" +
+              "EMP_DETAILS_VIEW EMP_DETAILS_VIEW,\n" +
+              "EMPLOYEES\n" +
+              "WHERE EMP_DETAILS_VIEW.JOB_ID=JOBS.JOB_ID\n" +
+              "AND EMP_DETAILS_VIEW.DEPARTMENT_ID=? \n" +
+              "AND EMP_DETAILS_VIEW.EMPLOYEE_ID=EMPLOYEES.EMPLOYEE_ID\n" +
               "ORDER BY NAME");
         ps.setString(1, ""+reszlegId);
       }
@@ -259,9 +262,10 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
         Dolgozo dolgozo = new Dolgozo(rs.getInt("empId"), 
                                       rs.getString("name"), 
                                       rs.getInt("depId"), 
-                                      (reszlegId==-1?"Részleg nélküli":rs.getString("depName")), 
+                                      rs.getInt("depId") == 0 ? "Részleg nélküli":rs.getString("depName"),
                                       rs.getString("jobTitle"), 
-                                      rs.getInt("SALARY"));
+                                      rs.getInt("SALARY"),
+                                      rs.getDate("HIRE_DATE"));
         lista.add(dolgozo);
       }
     }
@@ -340,7 +344,12 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
       kapcsolatNyit();
       PreparedStatement ps;
       ps=kapcsolat.prepareStatement(
-              "select employee_id as empId, first_name || ' ' || last_name as name, e.department_id as depId, d.department_name as depName, JOB_TITLE as jobTitle, salary\n" +
+              "select employee_id as empId, first_name || ' ' || last_name as name, "+
+              "e.department_id as depId, "+
+              "d.department_name as depName, "+
+              "JOB_TITLE as jobTitle, "+
+              "salary, \n" +
+              "e.HIRE_DATE \n"+
               "from employees e, departments d, jobs j\n" +
               "where e.department_id=d.department_id and e.job_id=j.job_id and\n" +
               "e.employee_id in (select distinct e.manager_id\n" +
@@ -355,7 +364,8 @@ public static boolean modositFizetés(int dolgozoID, int ujFizetes){
                                       rs.getInt("depId"), 
                                       rs.getString("depName"), 
                                       rs.getString("jobTitle"), 
-                                      rs.getInt("SALARY"));
+                                      rs.getInt("SALARY"), 
+                                      rs.getDate(HIRE_DATE));
         lista.add(dolgozo);
       }
     }
