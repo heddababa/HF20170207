@@ -75,6 +75,6 @@ public class Dolgozo implements Comparable<Dolgozo> {
   }
 
   public Object getFelveteliDatum() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return felveteliDatum;
   }
 }
