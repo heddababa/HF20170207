@@ -168,8 +168,11 @@ public class FoAblak extends JFrame
       tDolgozoTable.requestFocus();
       tDolgozoTable.addRowSelectionInterval(0, 0);
     }
-    if (e.getSource()==btUjDolgozo)
+    if (e.getSource()==btUjDolgozo){
       new DolgozoFelvetel(this, modell);
+      dolgozoListaBetoltes(-1);
+    }
+      
   }
 
   class MyDocumentListener implements DocumentListener {
