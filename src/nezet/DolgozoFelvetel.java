@@ -96,7 +96,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
     pnReszleg.setBorder(new EmptyBorder(10, 10, 10, 10));
     pnReszleg.add(lbReszlegnev);
     pnReszleg.add(cbReszlegLista);
-  //  cbReszlegLista.addActionListener(this);
+    cbReszlegLista.addActionListener(this);
     
     JPanel pnMunkakor=new JPanel (new GridLayout(1, 2));
     pnMunkakor.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -282,7 +282,14 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (e.getSource()==cbReszlegLista)
-      cbFonokLista=fonokListaBetoltes(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
+    if (e.getSource() == cbReszlegLista) {
+      cbFonokLista.removeAllItems();
+      ArrayList<Dolgozo> fonokok = modell.lekerdezFonokokListaja(((Reszleg) cbReszlegLista.getSelectedItem()).getReszlegId());
+      System.out.println("fönökök" + fonokok);
+      for (Dolgozo fonok : fonokok) {
+        cbFonokLista.addItem(fonok);
+      }
+
+    }
   }
 }
