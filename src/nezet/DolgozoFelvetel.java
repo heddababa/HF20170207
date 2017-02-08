@@ -144,7 +144,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
           if (mehetAMentes) {
             try {
               //int managerId=AdatBazisKezeles.lekerdezReszlegFonoke(((Reszleg)cbReszlegLista.getSelectedItem()).getReszlegId());
-              boolean siker=AdatBazisKezeles.ujDolgozoFelvetele(tfKeresztnev.getText(), 
+              boolean siker=modell.ujDolgozoFelvetele(tfKeresztnev.getText(), 
                                                 tfVezeteknev.getText(), 
                                                 tfEmail.getText(), 
                                                 tfTelefonszam.getText(), 
@@ -185,7 +185,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
   
   private void setLbFizetes() {
     Reszleg reszleg = (Reszleg)cbReszlegLista.getSelectedItem();
-    int[] osszFizetesosszLetszam=AdatBazisKezeles.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
+    int[] osszFizetesosszLetszam=modell.lekerdezesOsszFizLetszReszlegenBelul(reszleg.getReszlegId());
     int osszFiz=osszFizetesosszLetszam[0];
     int osszLetszam=osszFizetesosszLetszam[1];
     /*long*/ adhatoMinFizetes=Math.max(Math.round( osszFiz*(-0.05) + (osszFiz*0.95/osszLetszam)), 
@@ -244,7 +244,7 @@ class DolgozoFelvetel extends JDialog implements KeyListener, ActionListener {
   
   private boolean emailEllenorzes(String email) throws IllegalArgumentException {
     boolean megfeleloEmail=false;
-    ArrayList<String> emailLista=AdatBazisKezeles.lekerdezEmail();
+    ArrayList<String> emailLista=modell.lekerdezEmail();
     return !emailLista.contains(email);
   }
     
