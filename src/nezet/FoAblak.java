@@ -148,7 +148,7 @@ public class FoAblak extends JFrame
     return cbReszlegLista;
   }
 
-  private TableModel dolgozoListaBetoltes(int reszlegID) {
+  private MyTableModell dolgozoListaBetoltes(int reszlegID) {
     dolgozok = modell.lekerdezDolgozokListajaAdottReszleghez(reszlegID);
     MyTableModell mytm = new MyTableModell(dolgozok);
     return mytm;
