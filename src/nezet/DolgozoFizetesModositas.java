@@ -78,7 +78,7 @@ public class DolgozoFizetesModositas extends JDialog {
       public void mouseClicked(MouseEvent e) {
         //Ha nem valtozott a fizu osszeg, akkor NE mentsuk!
         if ((int)sp.getModel().getValue()!=aktFizetes) {
-          boolean siker = AdatBazisKezeles.modositFizetés(dolgozo.getEmpID(), (int)sp.getModel().getValue());
+          boolean siker = modell.modositFizetés(dolgozo.getEmpID(), (int)sp.getModel().getValue());
           if (siker) {
             dolgozo.setFizetes((int)sp.getModel().getValue());
             dispose();
